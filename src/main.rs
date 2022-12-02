@@ -1,4 +1,6 @@
 use sha1::Digest;
+// use sha2::{Sha256, Sha512, digest};
+use sha256::{digest};
 use std::{error::Error, fs::{File, OpenOptions}, io::{Write, BufRead, BufReader},};
 use eframe::egui;
 // SHA1 hashes are always 40 in length
@@ -29,6 +31,7 @@ Ok(not_found.to_string())
 fn add_password(password: String){
    let mut wordlist = OpenOptions::new().append(true).open("wordlist.txt").unwrap();   
    wordlist.write_all(password.as_bytes()).expect("write failed");
+   wordlist.write_all("\n".as_bytes()).expect("write failed");
     println!("Data appended successfully");
 }
 
@@ -59,11 +62,9 @@ fn sha1(args: &String) -> Result<String, Box<dyn Error>> {
     return  Ok(String::from(hashed_password));
 
 }
-// SHA 256
+
 
 fn crack_sha256(args: &String) -> Result<String, Box<dyn Error>> {
-    
-    let mut hasher = D::new();
     let not_found = "No password found";
     let hash_to_crack = args.trim();
     // if hash_to_crack.len() != SHA1_HEX_STRING_LENGTH {
@@ -74,8 +75,7 @@ fn crack_sha256(args: &String) -> Result<String, Box<dyn Error>> {
     for line in reader.lines() {
         let line = line?;
         let common_password = line.trim();
-        // if hash_to_crack == hasher.update(common_password) {
-         if hash_to_crack == Sha256::new().chain_update(common_password) {
+        if hash_to_crack == &digest(common_password.as_bytes()) {
             // println!("Password found: {}", &common_password);
             return  Ok(String::from(common_password));
         }
@@ -87,7 +87,6 @@ Ok(not_found.to_string())
 
 
 fn hash_sha256(args: &String) -> Result<String, Box<dyn Error>> {
-    let mut hasher = Sha256::new();
     let password_to_hash = args.trim();
     //Catch error for no input
     if password_to_hash.len() == 0 {
@@ -109,7 +108,7 @@ fn hash_sha256(args: &String) -> Result<String, Box<dyn Error>> {
         add_password(password_to_hash.to_string())
     }
 
-    let hashed_password = hasher.update(password_to_hash);
+    let hashed_password = &digest(password_to_hash.as_bytes());
     println!("Hashed password: {}", hashed_password);
     return  Ok(String::from(hashed_password));
 
