@@ -5,6 +5,7 @@ HashVat runs with user interface and is capable of cracking the 1.000.000 most c
 
 Enter a sha1 or sha256 in their respective input fields and hit crack to crack.
 Enter a password in the Cleartext field and select either algorithm to get the hash. This also adds the password to the list of known passwords.
+
 ![image](https://user-images.githubusercontent.com/87128575/205406834-54f17951-a248-4384-a2a0-60775786ae3e.png)
 
 ### Instructions
