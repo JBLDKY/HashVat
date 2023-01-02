@@ -3,6 +3,7 @@ pub mod sha1_functions;
 use crate::sha1_functions::{match_sha1, hash_sha1};
 pub mod password_functions;
 pub mod sha256_functions;
+use std::thread;
 use crate::sha256_functions::{match_sha256, hash_sha256};
 
 
@@ -60,8 +61,19 @@ impl eframe::App for MyApp {
 
             //CRACK WITH SHA256
             ui.horizontal(|ui| {
+                //label
                 ui.label("sha256");
+
+                //button
                 if ui.button("crack").clicked() {
+                    let new_thread = thread::spawn(move || {
+                        let response = match_sha256(&self.sha256_hash);
+                        self.pass = match response {
+                            Ok(v) => v.to_string(),
+                            Err(e) => e.to_string(),
+                        };
+                    });
+
                     let response = match_sha256(&self.sha256_hash);
                     self.pass = match response {
                         Ok(v) => v.to_string(),
